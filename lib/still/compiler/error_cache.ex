@@ -59,7 +59,7 @@ defmodule Still.Compiler.ErrorCache do
   def handle_call({:set, {:ok, source_file}}, _, state) do
     errors =
       state.errors
-      |> Map.put(source_file_id(source_file), nil)
+      |> Map.delete(source_file_id(source_file))
 
     state = %{state | errors: errors}
 
@@ -83,7 +83,7 @@ defmodule Still.Compiler.ErrorCache do
 
   @impl true
   def handle_cast(:clear, _state) do
-    {:noreply, %{}}
+    {:noreply, %{errors: %{}}}
   end
 
   def handle_cast(_, state) do

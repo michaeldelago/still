@@ -1,7 +1,7 @@
 defmodule Still.MixProject do
   use Mix.Project
 
-  @version "0.6.0"
+  @version "0.6.1"
 
   def project do
     [
@@ -98,10 +98,7 @@ defmodule Still.MixProject do
         "LICENSE",
         "mix*",
         "lib/*",
-        "priv/still/*",
-        "installer/lib/*",
-        "installer/mix*",
-        "installer/priv"
+        "priv/still/*"
       ]
     ]
   end

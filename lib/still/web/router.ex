@@ -39,20 +39,30 @@ defmodule Still.Web.Router do
     with :error <- try_send_file(conn, full_path),
          :error <- try_send_file(conn, "#{full_path}/index.html"),
          :error <- try_send_file(conn, "#{full_path}.html") do
+      %{content: content} = Still.Compiler.File.DevLayout.wrap("")
+
       conn
-      |> send_resp(404, "File not found")
+      |> put_resp_header("content-type", "text/html")
+      |> send_resp(200, content)
     end
   end
 
   defp try_send_file(conn, file) do
-    OutputToInputFileRegistry.recompile(file)
+    source_file = OutputToInputFileRegistry.recompile(file)
 
-    if File.exists?(file) and not File.dir?(file) do
-      conn
-      |> put_resp_header("content-type", MIME.from_path(file))
-      |> send_file(200, file)
-    else
-      :error
+    cond do
+      source_file.content != nil ->
+        conn
+        |> put_resp_header("content-type", MIME.from_path(file))
+        |> send_resp(200, source_file.content)
+
+      File.exists?(file) and not File.dir?(file) ->
+        conn
+        |> put_resp_header("content-type", MIME.from_path(file))
+        |> send_file(200, file)
+
+      true ->
+        :error
     end
   end
 
